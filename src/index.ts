@@ -140,11 +140,14 @@ export class ExchangeRateClient {
       throw new Error('[cmh-exchange-rate] 환율 조회 실패: ECB 및 Yahoo 모두 불가')
     }
 
-    // 급변 알림 체크
-    this.checkAlerts(snapshot)
-
+    // 순서 중요: prevSnapshot → cache 업데이트 → 급변 알림 체크
+    // checkAlerts에서 this.prevSnapshot(이전 캐시)과 비교하므로
+    // cache를 덮어쓰기 전에 prevSnapshot을 먼저 저장해야 함
     this.prevSnapshot = this.cache
     this.cache = snapshot
+
+    // 급변 알림 체크
+    this.checkAlerts(snapshot)
 
     return this.filterSnapshot(snapshot, currencies)
   }

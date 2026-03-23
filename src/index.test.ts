@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ExchangeRateClient } from '../src/index'
+import { ExchangeRateClient } from './index'
 
 // ── fetch 모킹 ────────────────────────────────────────────────────────────
 const mockFetch = vi.fn()
