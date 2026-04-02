@@ -229,7 +229,7 @@ export class ExchangeRateClient {
     const rates: Record<CurrencyCode, number> = {}
     // 날짜 추출: <Cube time="2026-01-15">
     const dateMatch = /time="(\d{4}-\d{2}-\d{2})"/.exec(xml)
-    const regex = /currency="([A-Z]{3})"\s+rate="([\d.]+)"/g
+    const regex = /currency=["']([A-Z]{3})["']\s+rate=["']([\d.]+)["']/g
     let match: RegExpExecArray | null
     // biome-ignore lint/suspicious/noAssignInExpressions: intentional regex loop
     while ((match = regex.exec(xml)) !== null) {
@@ -256,8 +256,8 @@ export class ExchangeRateClient {
     for (const c of currencies) result[c] = []
 
     // <Cube time="2026-01-15"> ... <Cube currency="USD" rate="1.08"/> ...
-    const dayBlockRegex = /<Cube time="(\d{4}-\d{2}-\d{2})">([\s\S]*?)<\/Cube>/g
-    const rateRegex = /currency="([A-Z]{3})"\s+rate="([\d.]+)"/g
+    const dayBlockRegex = /<Cube time=["'](\d{4}-\d{2}-\d{2})["']>([\s\S]*?)<\/Cube>/g
+    const rateRegex = /currency=["']([A-Z]{3})["']\s+rate=["']([\d.]+)["']/g
 
     let dayBlock: RegExpExecArray | null
     // biome-ignore lint/suspicious/noAssignInExpressions: intentional regex loop
