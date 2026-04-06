@@ -6,6 +6,77 @@ EUR-based exchange rate client. **ECB (European Central Bank) daily XML** as pri
 
 TypeScript port of the `YahooExchangeRateService` from the PHP CmhCore plugin.
 
+---
+
+## Complete Feature List
+
+### 💱 Exchange Rate Queries
+
+| Feature | Method | Description |
+|---------|--------|-------------|
+| Current Rates | `getCurrentRates()` | Get current EUR-based exchange rates |
+| Filtered Rates | `getCurrentRates(['USD', 'KRW'])` | Get rates for specific currencies only |
+| All Rates | `getCurrentRates([])` | Get all available ECB rates (30+ currencies) |
+| Cross Rate | `getCrossRate('USD', 'KRW')` | Calculate cross-rate via EUR base |
+| Historical Rates | `getHistoricalRates()` | Get date-range historical data from ECB |
+
+### 📡 Data Sources
+
+| Source | Priority | Description |
+|--------|----------|-------------|
+| **ECB Daily** | 1st (primary) | Official European Central Bank daily XML |
+| **ECB Historical** | Historical | Full history since 1999 via ECB XML |
+| **Yahoo Finance** | 2nd (fallback) | Near-real-time unofficial API |
+| **In-Memory Cache** | Cached | Returns cached data within TTL |
+
+### ⚙️ Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `ecbUrl` | string | ECB official URL | Override ECB XML URL (proxy environments) |
+| `cacheTtlMs` | number | 3,600,000 (1hr) | Cache expiration time in milliseconds |
+| `alertThresholdPct` | number | 5 | Rate change alert threshold percentage |
+| `onRateAlert` | callback | undefined | Callback on rate spike detection |
+| `enableYahooFallback` | boolean | true | Enable/disable Yahoo Finance fallback |
+
+### 🔔 Rate Change Alerts
+
+| Feature | Description |
+|---------|-------------|
+| Spike Detection | Compares new rates with previous snapshot |
+| Configurable Threshold | Trigger alert when change exceeds N% |
+| Callback Notification | `(currency, oldRate, newRate, changePct) => void` |
+
+### 🗂️ Cache Management
+
+| Feature | Method | Description |
+|---------|--------|-------------|
+| Auto Cache | Automatic | Results cached within TTL |
+| Cache Source | `source: 'cache'` | Indicates response came from cache |
+| Clear Cache | `clearCache()` | Force invalidate all cached data |
+
+### 📊 Response Metadata
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `base` | `'EUR'` | Base currency (always EUR) |
+| `date` | string | Rate date (YYYY-MM-DD) |
+| `rates` | Record | Currency code → rate mapping |
+| `source` | string | Data source: `'ecb'`, `'yahoo'`, or `'cache'` |
+| `fetchedAt` | string | ISO 8601 fetch timestamp |
+
+### 📦 TypeScript Types
+
+| Type | Description |
+|------|-------------|
+| `ExchangeRateSnapshot` | Full response structure |
+| `HistoricalRates` | Date-range rate data |
+| `RateDataPoint` | Single date + rate pair |
+| `CurrencyCode` | ISO 4217 currency string |
+| `ExchangeRateClientOptions` | Client configuration options |
+
+---
+
 ## Installation
 
 ```bash

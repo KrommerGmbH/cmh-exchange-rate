@@ -6,6 +6,77 @@ EUR-basierter Wechselkurs-Client. **EZB (Europäische Zentralbank) Daily-XML** a
 
 TypeScript-Portierung des `YahooExchangeRateService` aus dem PHP-CmhCore-Plugin.
 
+---
+
+## Vollständige Funktionsliste
+
+### 💱 Wechselkurs-Abfragen
+
+| Funktion | Methode | Beschreibung |
+|----------|---------|-------------|
+| Aktuelle Kurse | `getCurrentRates()` | Aktuelle EUR-basierte Wechselkurse abrufen |
+| Gefilterte Kurse | `getCurrentRates(['USD', 'KRW'])` | Nur bestimmte Währungen abrufen |
+| Alle Kurse | `getCurrentRates([])` | Alle verfügbaren EZB-Kurse (30+ Währungen) |
+| Kreuzkurs | `getCrossRate('USD', 'KRW')` | Kreuzkurs über EUR-Basis berechnen |
+| Historische Kurse | `getHistoricalRates()` | Datumsbereich-Historie von EZB abrufen |
+
+### 📡 Datenquellen
+
+| Quelle | Priorität | Beschreibung |
+|--------|----------|-------------|
+| **EZB Daily** | 1. (primär) | Offizielles Daily-XML der Europäischen Zentralbank |
+| **EZB Historisch** | Historie | Vollständige Historie seit 1999 via EZB-XML |
+| **Yahoo Finance** | 2. (Fallback) | Nahezu-Echtzeit inoffizielle API |
+| **In-Memory-Cache** | Gepuffert | Gibt gepufferte Daten innerhalb TTL zurück |
+
+### ⚙️ Konfigurationsoptionen
+
+| Option | Typ | Standard | Beschreibung |
+|--------|-----|----------|-------------|
+| `ecbUrl` | string | EZB offizielle URL | EZB-XML-URL überschreiben (Proxy-Umgebungen) |
+| `cacheTtlMs` | number | 3.600.000 (1 Std.) | Cache-Ablaufzeit in Millisekunden |
+| `alertThresholdPct` | number | 5 | Schwellenwert für Kursänderungsalarm (%) |
+| `onRateAlert` | Callback | undefined | Callback bei starker Kursänderung |
+| `enableYahooFallback` | boolean | true | Yahoo Finance Fallback aktivieren/deaktivieren |
+
+### 🔔 Kursänderungs-Alarme
+
+| Funktion | Beschreibung |
+|----------|-------------|
+| Sprungerkennung | Vergleicht neue Kurse mit vorherigem Snapshot |
+| Konfigurierbarer Schwellenwert | Alarm auslösen wenn Änderung N% überschreitet |
+| Callback-Benachrichtigung | `(currency, oldRate, newRate, changePct) => void` |
+
+### 🗂️ Cache-Verwaltung
+
+| Funktion | Methode | Beschreibung |
+|----------|--------|-------------|
+| Auto-Cache | Automatic | Ergebnisse innerhalb TTL automatisch gepuffert |
+| Cache-Quelle | `source: 'cache'` | Zeigt an dass Antwort aus Cache kam |
+| Cache leeren | `clearCache()` | Alle gepufferten Daten ungültig machen |
+
+### 📊 Antwort-Metadaten
+
+| Feld | Typ | Beschreibung |
+|------|-----|-------------|
+| `base` | `'EUR'` | Basiswährung (immer EUR) |
+| `date` | string | Kursdatum (YYYY-MM-DD) |
+| `rates` | Record | Währungscode → Kurs-Zuordnung |
+| `source` | string | Datenquelle: `'ecb'`, `'yahoo'` oder `'cache'` |
+| `fetchedAt` | string | ISO-8601-Abrufzeitstempel |
+
+### 📦 TypeScript-Typen
+
+| Typ | Beschreibung |
+|-----|-------------|
+| `ExchangeRateSnapshot` | Vollständige Antwortstruktur |
+| `HistoricalRates` | Datumsbereich-Kursdaten |
+| `RateDataPoint` | Einzelnes Datum + Kurs-Paar |
+| `CurrencyCode` | ISO-4217-Währungszeichenfolge |
+| `ExchangeRateClientOptions` | Client-Konfigurationsoptionen |
+
+---
+
 ## Installation
 
 ```bash
